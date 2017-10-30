@@ -1,10 +1,10 @@
-#Introduction
+# Introduction
 
 This is upgraded copy of my previous work about boolean search and inverted index.
 
 Here I use vector space model and lnc.ltc weighting scheme.
 
-#Complexity of algorithms
+# Complexity of algorithms
 
 In previous work, it cost much time to index all documents.
 
@@ -16,7 +16,7 @@ Since I don't use any hueristic for avoid computing cosine similarity for all of
 
 I use simple tf weighting schema, log-weighted tf, tf-idf. But results didn't change a lot.
 
-#Evaluating of work
+# Evaluating of work
 I use the 500 first documents from corpus fo documnets we have been provided on Moodle.
 
 At first I try to find documents about the World War The Second(next terms were included:Russia 1941 was involved in a great war).But in corpus my system finds only documents about World War the First, or Russia or something.
@@ -31,7 +31,7 @@ Knowing that f1-score is 0.57
 
 I didn't compute this parameters for previous query, but I expect to get 0 true positive variants, so all of the parameters going to be 0.
 
-#Comparing with previous work
+# Comparing with previous work
 
 At first I did not understand how to modify my solution to bring ranked system, because i thought that it is different aproaches.But at the end, I change only file representation of index and indexing with searching itself. All the others software design approaches stays the same. But during this work I found out messtakes that slows my solution greatly, and also mistake in design of system. Even I didn't change a lot of functionalities. I change code in different packages. And now it seems that i have changed almost every file.
 
