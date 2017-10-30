@@ -1,9 +1,11 @@
-from InvertedIndex import InvertedIndex
+from VectorSpace import VectorSpace
 import string
 import nltk
 from nltk.stem.porter import PorterStemmer
 from os import listdir
 from os.path import isfile, join
+
+from VectorSpace import Term, Document as VSDocument
 
 
 class Document():
@@ -22,29 +24,45 @@ def normalize(tokens):
 
 
 def create_index_form_docs(docs):
-    index = InvertedIndex()
+    index = VectorSpace()
     for doc in docs:
         doc.content = doc.content.translate(''.maketrans(string.punctuation, ' '*len(string.punctuation)))
         tokens = tokenize(doc.content)
         normalized_tokens = normalize(tokens)
-        index.add_list(normalized_tokens, doc.doc_number)
+        index.add_document(normalized_tokens, doc.doc_number)
     return index
 
 def create_index(dirname="./documents"):
     docs = get_docs(dirname)
     index = create_index_form_docs(docs)
-    index.sort()
+    # index.sort()
+    index.compute_tf_idf()
     export_index(index, 'index')
 
 
 def export_index(index, filename):
-    f = open(filename, 'w')
-    for token, doc_list in index._tokens.items():
-        f.write(token + ':')
-        for doc in doc_list:
-            f.write(str(doc) + ' ')
+    export_terms(filename, index)
+    export_docs(filename, index)
+
+
+def export_terms(filename, index):
+    f = open(filename + '_terms', 'w')
+    i = 0
+    for term in index._terms:
+        f.write(term.term + ':' + str(term.document_frequency) + ':' + str(i) + '\n')
+        i += 1
+    f.close()
+
+
+def export_docs(filename, index):
+    f = open(filename + '_docs', 'w')
+    for document in index._documents:
+        f.write(str(document.doc_number) + ':')
+        for term_id, value in document.terms.items():
+            f.write(str(term_id) + ' ' + str(value) + ';')
         f.write('\n')
-    f.close
+    f.close()
+
 
 def get_docs(dirname="./documents"):
     onlyfiles = [f for f in listdir(dirname) if isfile(join(dirname, f))]
@@ -67,20 +85,47 @@ def get_docs(dirname="./documents"):
 
 def import_index(index_path = 'index'):
     print('Begin importing')
-    f = open(index_path, 'r')
+    index = VectorSpace()
+
+    f = open(index_path+'_terms', 'r')
     next_line = f.readline()
-    index = InvertedIndex()
+
+    while next_line != '':
+        tokens = next_line.split(':')
+        term = Term()
+        term.term = tokens[0]
+        term.document_frequency = int(tokens[1])
+
+        index._terms.append(term)
+        next_line = f.readline()
+
+    f.close()
+
+
+    f = open(index_path + '_docs', 'r')
+    next_line = f.readline()
+
     while next_line != '':
         current_char = 0
-        token = ''
+        doc_number = ''
         while next_line[current_char] != ':':
-            token += next_line[current_char]
+            doc_number += next_line[current_char]
             current_char += 1
         next_line = next_line[current_char+1:len(next_line)-1]
-        docs = next_line.split(' ')
-        for doc in docs:
-            if len(doc) > 0:
-                index.add(token, int(doc))
+        doc_number = int(doc_number)
+
+        terms = next_line.split(';')
+        document = VSDocument()
+        document.doc_number = doc_number
+        document.terms = {}
+
+        for term in terms:
+            if term:
+                tokens = term.split(' ')
+                document.terms[int(tokens[0])] = float(tokens[1])
+
+        index._documents.append(document)
+        index.N_docs += 1
         next_line = f.readline()
     print('Index has been imported')
     return index

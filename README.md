@@ -1,10 +1,51 @@
+#Introduction
+
+This is upgraded copy of my previous work about boolean search and inverted index.
+
+Here I use vector space model and lnc.ltc weighting scheme.
+
+#Complexity of algorithms
+
+In previous work, it cost much time to index all documents.
+
+In thi work complexity stays nearly the same. But since we might have much less document list, we can expect indexing in a fast way.
+
+Since I don't use any hueristic for avoid computing cosine similarity for all of the documents, the time of processing queries bocomes bigger, but with our document list it is not crucial.
+
+#Different weighting schemas
+
+I use simple tf weighting schema, log-weighted tf, tf-idf. But results didn't change a lot.
+
+#Evaluating of work
+I use the 500 first documents from corpus fo documnets we have been provided on Moodle.
+
+At first I try to find documents about the World War The Second(next terms were included:Russia 1941 was involved in a great war).But in corpus my system finds only documents about World War the First, or Russia or something.
+
+Then i realize that given corpus is about libraries(a lot of words librari*). And I changemy query to:'Libraries becomes much better in last 1000 years'
+
+Now I get better results. A lot of given documents says about history or growing of libraries.
+
+So precision is 0.4. I assume that all other documents are irrelevant for query, because it would spend a lot of time to read and claify all of the 500 documents. Since that recall will be 1 for us.
+
+Knowing that f1-score is 0.57
+
+I didn't compute this parameters for previous query, but I expect to get 0 true positive variants, so all of the parameters going to be 0.
+
+#Comparing with previous work
+
+At first I did not understand how to modify my solution to bring ranked system, because i thought that it is different aproaches.But at the end, I change only file representation of index and indexing with searching itself. All the others software design approaches stays the same. But during this work I found out messtakes that slows my solution greatly, and also mistake in design of system. Even I didn't change a lot of functionalities. I change code in different packages. And now it seems that i have changed almost every file.
+
+| Before | After |
+|---|---|
+|![search_before](https://image.ibb.co/f3kLMv/image.png)|![search_after](https://image.ibb.co/fq3wfm/image.png)|
+|![index_before](https://image.ibb.co/eMOwuF/image.png)|![index_after](https://image.ibb.co/mYDCLm/image.png)|
 # Instalation
 
 To install this solution, you must have python 3+, virtualenv for python 3+  tools installed.
 
-At first you need to clone this repository with command: `git clone https://github.com/Valt25/googleSearch.git`
+At first you need to clone this repository with command: `git clone https://github.com/Valt25/relevantSearch.git`
 
-Then go in appeared folder. `cd googleSearch`
+Then go in appeared folder. `cd relevantSearch`
 
 Now you have to create virtual environment: `virtualenv venv`
 
@@ -34,6 +75,7 @@ The second mode is searching. You can run it:
 Where query is path to file, where search query is located.
 
 # Documents form
+
 Every document that is wanted to be indexed, have to be in specified folder.
 
 Each document is text in next form: 'Document <doc_number> \n doc_content \n ********************************************\n'.
@@ -49,24 +91,16 @@ I use given corpus archive for testing and evaluating system. But anyway it can 
 
 # Query form
 
-Query allow using NOT, OR, AND operations. In query it have to be in form LOGNOT, LOGOR, LOGAND, not to get the same words as OR, NOT, AND in query.
-
-Queries support not-AND notation. So 'digital computing' means 'digital LOGAND computing'. In every place where operator is missing, LOGAND would be appeared
+Here we use free text queries
 
 # Design
 
-I use distinct packages for distinct features. Packeage for creating index, and the other one for searching(parsing, processing).
+I use distinct packages for distinct features. Package for creating index, and the other one for searching(parsing, processing).
 
 # References
 
 In this solution [NLTK](http://www.nltk.org/) python library was used for NLP issues. Because i did not think, that I am expected to write own stemmers, lemmatizers, tokeniers.
 
-Also I have copied and modified code from next [github repository](https://github.com/spyrant/boolean-retrieval-engine)( @github/spyrant ). I used part of this code for parsing boolean retrieval queries.
-
 # Screenshots
 
-![index](https://image.ibb.co/eMOwuF/image.png)
-
-![searching](https://image.ibb.co/f3kLMv/image.png)
-
-![query](https://image.ibb.co/fp5RuF/image.png)
+![query](https://image.ibb.co/hF2Tt6/image.png)
